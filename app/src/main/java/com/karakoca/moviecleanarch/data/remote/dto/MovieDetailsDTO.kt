@@ -55,20 +55,20 @@ data class MovieDetailsDTO(
     val writer: String?,
     @SerializedName("Year")
     val year: String?
-) {
-    fun MovieDetailsDTO.toMovieDetail(): MovieDetail {
-        return MovieDetail(
-            director,
-            genre,
-            imdbRating,
-            imdbVotes,
-            plot,
-            poster,
-            released,
-            title,
-            type,
-            runtime,
-            year
-        )
-    }
+)
+
+fun MovieDetailsDTO.toMovieDetail(): MovieDetail {
+    return MovieDetail(
+        director,
+        genre,
+        imdbRating,
+        imdbVotes,
+        plot,
+        poster,
+        released,
+        title,
+        type,
+        runtime,
+        year
+    )
 }

@@ -19,7 +19,7 @@ interface MovieApi {
     @GET
     suspend fun getMovieDetails(
         @Query("apikey") apiKey: String = Keys.apiKey(),
-        @Query("i") search: String
+        @Query("i") imdbId: String
     ): Response<MovieDetailsDTO>
 
 }

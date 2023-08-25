@@ -11,16 +11,16 @@ data class MoviesDTO(
     val search: List<Search?>?,
     @SerializedName("totalResults")
     val totalResults: String?
-) {
-    fun MoviesDTO.toMovie(): List<Movie> {
-        return search?.mapNotNull {
-            Movie(
-                it?.imdbID ?: "",
-                it?.poster ?: "",
-                it?.title ?: "",
-                it?.type ?: "",
-                it?.year ?: ""
-            )
-        } ?: listOf()
-    }
+)
+
+fun MoviesDTO.toMovie(): List<Movie> {
+    return search?.mapNotNull {
+        Movie(
+            it?.imdbID ?: "",
+            it?.poster ?: "",
+            it?.title ?: "",
+            it?.type ?: "",
+            it?.year ?: ""
+        )
+    } ?: listOf()
 }
