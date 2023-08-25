@@ -1,1 +1,6 @@
 /build
+/gradlew
+/gradlew.bat
+.externalNativeBuild
+.cxx/
+.idea/*
