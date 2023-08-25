@@ -2,6 +2,7 @@ package com.karakoca.moviecleanarch.data.remote.dto
 
 
 import com.google.gson.annotations.SerializedName
+import com.karakoca.moviecleanarch.domain.model.MovieDetail
 
 data class MovieDetailsDTO(
     @SerializedName("Actors")
@@ -54,4 +55,20 @@ data class MovieDetailsDTO(
     val writer: String?,
     @SerializedName("Year")
     val year: String?
-)
+) {
+    fun MovieDetailsDTO.toMovieDetail(): MovieDetail {
+        return MovieDetail(
+            director,
+            genre,
+            imdbRating,
+            imdbVotes,
+            plot,
+            poster,
+            released,
+            title,
+            type,
+            runtime,
+            year
+        )
+    }
+}
