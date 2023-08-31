@@ -1,3 +1,5 @@
+import com.android.build.api.dsl.Packaging
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -52,7 +54,12 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "lib/armeabi-v7a/libnative-lib.so"
+            excludes += "lib/x86_64/libnative-lib.so"
         }
+    }
+    fun Packaging.() {
+
     }
     externalNativeBuild {
         cmake {
@@ -102,4 +109,16 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.2")
     // Coil
     implementation("io.coil-kt:coil-compose:1.3.2")
+
+    // Pagination
+    implementation("androidx.paging:paging-runtime-ktx:3.2.0")
+    implementation("androidx.paging:paging-compose:3.2.0")
+
+    // Compose dependencies
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
+    implementation("androidx.navigation:navigation-compose:2.6.0-rc01")
+    implementation("com.google.accompanist:accompanist-flowlayout:0.17.0")
+    implementation("com.squareup.moshi:moshi-kotlin:1.13.0")
+    implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
+
 }

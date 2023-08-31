@@ -4,6 +4,8 @@ import com.karakoca.moviecleanarch.data.remote.MovieApi
 import com.karakoca.moviecleanarch.data.repository.MovieRepositoryImpl
 import com.karakoca.moviecleanarch.domain.repository.MovieRepository
 import com.karakoca.moviecleanarch.utils.Constant
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,6 +21,10 @@ object AppModule {
     @Singleton
     @Provides
     fun provideApi(): MovieApi {
+        val moshi = Moshi.Builder()
+            .add(KotlinJsonAdapterFactory())
+            .build()
+
         return Retrofit.Builder()
             .baseUrl(Constant.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
