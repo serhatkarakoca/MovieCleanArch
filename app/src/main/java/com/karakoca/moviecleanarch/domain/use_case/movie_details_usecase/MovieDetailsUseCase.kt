@@ -21,7 +21,7 @@ class MovieDetailsUseCase @Inject constructor(private val repository: MovieRepos
                 emit(Resource.Error(message = "Error", error = null))
 
         } catch (e: Exception) {
-            emit(Resource.Error(error = e, message = null))
+            emit(Resource.Error(error = e, message = e.message))
         }
     }
 }

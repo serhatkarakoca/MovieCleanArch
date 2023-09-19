@@ -14,8 +14,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.karakoca.moviecleanarch.Screen
+import com.karakoca.moviecleanarch.presentation.movie_details.view.MovieDetailsScreen
 import com.karakoca.moviecleanarch.presentation.movies.view.MovieScreen
 import com.karakoca.moviecleanarch.presentation.ui.theme.MovieCleanArchTheme
+import com.karakoca.moviecleanarch.utils.Constant.IMDB_ID
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -38,8 +40,9 @@ class MainActivity : ComponentActivity() {
                             MovieScreen(navController = navController)
                         }
 
-                        composable(route = Screen.MovieDetailsScreen.route) {
-
+                        composable(route = Screen.MovieDetailsScreen.route + "/{${IMDB_ID}}") {
+                            // val imdbId = remember {it.arguments?.getString(IMDB_ID) }
+                            MovieDetailsScreen()
                         }
                     }
                 }

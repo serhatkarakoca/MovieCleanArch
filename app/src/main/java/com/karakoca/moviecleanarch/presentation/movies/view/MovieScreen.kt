@@ -26,7 +26,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.karakoca.moviecleanarch.Screen
 import com.karakoca.moviecleanarch.presentation.movies.MoviesViewModel
+import com.karakoca.moviecleanarch.utils.Constant.DEFAULT_SEARCH
 
 
 @Composable
@@ -39,14 +41,16 @@ fun MovieScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Blue)
+            .background(Color.Black)
     ) {
         Column {
+            val hint =
+                if (viewModel.query.value != DEFAULT_SEARCH) viewModel.query.value else "Search..."
             SearchBar(modifier = Modifier
                 .fillMaxWidth()
-                .padding(20.dp), hint = "Search...", onSearch = {
+                .padding(20.dp), hint = hint, onSearch = {
 
-                viewModel.query.value = it.ifEmpty { "movie" }
+                viewModel.query.value = it.ifEmpty { DEFAULT_SEARCH }
                 movies.refresh()
 
             })
@@ -54,14 +58,9 @@ fun MovieScreen(
             LazyColumn {
                 items(count = movies.itemCount) { index ->
                     movies[index]?.let { item ->
-                        Column {
-                            Text(
-                                text = item.title ?: "",
-                                modifier = Modifier.fillMaxWidth(),
-                                color = Color.White,
-                                textAlign = TextAlign.Center
-                            )
-                        }
+                        MovieRow(item = item, clickListener = {
+                            navController.navigate(Screen.MovieDetailsScreen.route + "/$it")
+                        })
                     }
                 }
 

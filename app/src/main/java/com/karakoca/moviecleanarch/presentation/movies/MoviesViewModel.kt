@@ -10,9 +10,9 @@ import com.karakoca.moviecleanarch.data.remote.MovieApi
 import com.karakoca.moviecleanarch.domain.model.Movie
 import com.karakoca.moviecleanarch.domain.repository.MovieRepository
 import com.karakoca.moviecleanarch.domain.use_case.movies_usecase.MoviesUseCase
+import com.karakoca.moviecleanarch.utils.Constant
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
@@ -29,13 +29,8 @@ class MoviesViewModel @Inject constructor(
     val state: State<MovieState>
         get() = _state
 
-    var query = mutableStateOf("movie")
+    var query = mutableStateOf(Constant.DEFAULT_SEARCH)
 
-    private var job: Job? = null
-
-    init {
-
-    }
 
     fun getMovies(): Flow<PagingData<Movie>> {
         return moviesUseCase.invoke(query.value).cachedIn(viewModelScope).flowOn(Dispatchers.IO)
