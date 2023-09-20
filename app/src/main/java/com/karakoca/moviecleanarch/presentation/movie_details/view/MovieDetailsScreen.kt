@@ -1,6 +1,8 @@
 package com.karakoca.moviecleanarch.presentation.movie_details.view
 
 import AlertDialogMovie
+import android.net.Uri
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,7 +20,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -29,6 +33,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -48,6 +53,12 @@ fun MovieDetailsScreen(
 ) {
     val state = viewModel.state.value
     val openAlertDialog = remember { mutableStateOf(true) }
+
+
+    if (viewModel.showCustomTab.value) {
+        ShowCustomTab(imdbId = viewModel.imdbId)
+        viewModel.showCustomTab.value = false
+    }
 
     BoxWithConstraints(
         Modifier
@@ -128,6 +139,22 @@ fun MovieDetailsScreen(
                         color = Color.White,
                         modifier = Modifier.padding(vertical = 24.dp)
                     )
+
+                    ElevatedButton(
+                        onClick = {
+                            viewModel.showCustomTab.value = true
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Yellow),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "Imdb Page",
+                            color = Color.Black,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp
+                        )
+                    }
+
                 }
             }
 
@@ -161,4 +188,14 @@ fun MovieDetailsScreen(
             }
         }
     }
+}
+
+@Composable
+fun ShowCustomTab(imdbId: String) {
+    val builder = CustomTabsIntent.Builder().apply {
+        setUrlBarHidingEnabled(true)
+        setShareState(CustomTabsIntent.SHARE_STATE_OFF)
+    }
+    val customTabsIntent = builder.build()
+    customTabsIntent.launchUrl(LocalContext.current, Uri.parse("https://imdb.com/title/$imdbId"))
 }

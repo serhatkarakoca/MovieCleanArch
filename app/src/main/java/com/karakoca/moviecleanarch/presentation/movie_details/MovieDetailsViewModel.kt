@@ -23,9 +23,13 @@ class MovieDetailsViewModel @Inject constructor(
     val state: State<MovieDetailsState>
         get() = _state
 
+    val showCustomTab = mutableStateOf(false)
+
+    var imdbId: String = ""
 
     init {
         savedStateHandle.get<String>(IMDB_ID)?.let {
+            imdbId = it
             getMovieDetails(it)
         }
     }
