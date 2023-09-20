@@ -13,7 +13,8 @@ import com.karakoca.moviecleanarch.domain.use_case.movies_usecase.MoviesUseCase
 import com.karakoca.moviecleanarch.utils.Constant
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -29,11 +30,24 @@ class MoviesViewModel @Inject constructor(
     val state: State<MovieState>
         get() = _state
 
+    private val _moviesState: MutableStateFlow<PagingData<Movie>> =
+        MutableStateFlow(value = PagingData.empty())
+    val moviesState: MutableStateFlow<PagingData<Movie>> get() = _moviesState
+
     var query = mutableStateOf(Constant.DEFAULT_SEARCH)
 
+    init {
+        onEvent(MoviesEvent.Search)
+    }
 
-    fun getMovies(): Flow<PagingData<Movie>> {
-        return moviesUseCase.invoke(query.value).cachedIn(viewModelScope).flowOn(Dispatchers.IO)
+    private suspend fun getMovies() {
+        moviesUseCase.invoke(query.value)
+            .distinctUntilChanged()
+            .cachedIn(viewModelScope)
+            .flowOn(Dispatchers.IO)
+            .collect {
+                _moviesState.value = it
+            }
     }
 
     fun onEvent(event: MoviesEvent) {

@@ -2,7 +2,20 @@ package com.karakoca.moviecleanarch.presentation.movie_details.view
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -16,86 +29,120 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil.compose.rememberImagePainter
+import coil.annotation.ExperimentalCoilApi
+import coil.compose.rememberAsyncImagePainter
 import com.karakoca.moviecleanarch.R
 import com.karakoca.moviecleanarch.presentation.movie_details.MovieDetailsViewModel
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalCoilApi::class)
 @Composable
 fun MovieDetailsScreen(
     viewModel: MovieDetailsViewModel = hiltViewModel()
 ) {
     val state = viewModel.state.value
 
-    Box(
-        modifier = Modifier
+    BoxWithConstraints(
+        Modifier
             .fillMaxSize()
             .background(Color.Black)
+            .verticalScroll(rememberScrollState())
     ) {
-        state.data?.let { movie ->
-            Column(
-                Modifier
-                    .fillMaxSize()
-                    .padding(24.dp)
-            ) {
+        val pageSize = constraints.minHeight
+        val maxHeight = maxHeight
 
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black)
+        ) {
+            state.data?.let { movie ->
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    Modifier
+                        .fillMaxSize()
+                        .padding(24.dp)
                 ) {
-                    Image(
-                        painter = rememberImagePainter(data = movie.poster),
-                        contentDescription = null,
+
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clip(RectangleShape)
+                            .height((pageSize / 5).dp)
                             .padding(24.dp),
-                        contentScale = ContentScale.FillWidth
-                    )
-                }
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Image(
+                            painter = rememberAsyncImagePainter(movie.poster),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RectangleShape)
+                                .padding(24.dp),
+                            contentScale = ContentScale.FillWidth
+                        )
+                    }
 
-                FlowRow(
-                    Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Start,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = movie.title.toString(),
-                        color = Color.White,
-                        fontSize = 21.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(end = 12.dp)
-                    )
-                    Text(
-                        text = "(${movie.year.toString()})",
-                        color = Color.White
-                    )
-                }
-                Row(
-                    Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Start,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = movie.runtime.toString(),
-                        color = Color.White,
-                        modifier = Modifier.padding(end = 16.dp)
-                    )
-                    Image(
-                        painter = painterResource(id = R.drawable.round_star_24),
-                        contentDescription = null
-                    )
-                    Text(text = movie.imdbRating.toString(), color = Color.Yellow)
-                }
+                    FlowRow(
+                        Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Start,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = movie.title.toString(),
+                            color = Color.White,
+                            fontSize = 21.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(end = 12.dp)
+                        )
+                        Text(
+                            text = "(${movie.year.toString()})",
+                            color = Color.White
+                        )
+                    }
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = movie.runtime.toString(),
+                            color = Color.White,
+                            modifier = Modifier.padding(end = 16.dp)
+                        )
+                        Image(
+                            painter = painterResource(id = R.drawable.round_star_24),
+                            contentDescription = null
+                        )
+                        Text(text = movie.imdbRating.toString(), color = Color.Yellow)
+                    }
 
-                Text(text = movie.genre.toString(), color = Color.LightGray)
-                Text(
-                    text = movie.plot.toString(),
-                    color = Color.White,
-                    modifier = Modifier.padding(vertical = 24.dp)
-                )
+                    Text(text = movie.genre.toString(), color = Color.LightGray)
+                    Text(
+                        text = movie.plot.toString(),
+                        color = Color.White,
+                        modifier = Modifier.padding(vertical = 24.dp)
+                    )
+                }
+            }
+
+            if (state.loading) {
+                Column(
+                    Modifier
+                        .fillMaxSize()
+                        .height((pageSize / 3).dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    CircularProgressIndicator(color = Color.Red)
+                }
+            }
+
+            if (state.error != null) {
+                Column(
+                    Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(text = state.error, Modifier.padding(20.dp), color = Color.White)
+                }
             }
         }
     }

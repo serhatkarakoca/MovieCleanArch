@@ -27,6 +27,7 @@ import androidx.navigation.NavController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.karakoca.moviecleanarch.Screen
+import com.karakoca.moviecleanarch.presentation.movies.MoviesEvent
 import com.karakoca.moviecleanarch.presentation.movies.MoviesViewModel
 import com.karakoca.moviecleanarch.utils.Constant.DEFAULT_SEARCH
 
@@ -36,7 +37,7 @@ fun MovieScreen(
     navController: NavController,
     viewModel: MoviesViewModel = hiltViewModel()
 ) {
-    val movies = viewModel.getMovies().collectAsLazyPagingItems()
+    val movies = viewModel.moviesState.collectAsLazyPagingItems()
 
     Box(
         modifier = Modifier
@@ -51,8 +52,7 @@ fun MovieScreen(
                 .padding(20.dp), hint = hint, onSearch = {
 
                 viewModel.query.value = it.ifEmpty { DEFAULT_SEARCH }
-                movies.refresh()
-
+                viewModel.onEvent(MoviesEvent.Search)
             })
 
             LazyColumn {

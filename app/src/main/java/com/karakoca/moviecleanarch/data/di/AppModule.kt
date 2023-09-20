@@ -4,14 +4,14 @@ import com.karakoca.moviecleanarch.data.remote.MovieApi
 import com.karakoca.moviecleanarch.data.repository.MovieRepositoryImpl
 import com.karakoca.moviecleanarch.domain.repository.MovieRepository
 import com.karakoca.moviecleanarch.utils.Constant
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
@@ -20,13 +20,18 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideApi(): MovieApi {
-        val moshi = Moshi.Builder()
-            .add(KotlinJsonAdapterFactory())
-            .build()
+    fun provideOkHttpClient(): OkHttpClient.Builder {
+        return OkHttpClient.Builder()
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+    }
 
+    @Singleton
+    @Provides
+    fun provideApi(okHttpClient: OkHttpClient.Builder): MovieApi {
         return Retrofit.Builder()
             .baseUrl(Constant.BASE_URL)
+            .client(okHttpClient.build())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(MovieApi::class.java)
