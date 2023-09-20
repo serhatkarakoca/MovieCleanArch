@@ -2,6 +2,7 @@ package com.karakoca.moviecleanarch.presentation.movie_details.view
 
 import AlertDialogMovie
 import android.net.Uri
+import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -38,6 +39,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.annotation.ExperimentalCoilApi
@@ -194,6 +196,11 @@ fun MovieDetailsScreen(
 fun ShowCustomTab(imdbId: String) {
     val builder = CustomTabsIntent.Builder().apply {
         setUrlBarHidingEnabled(true)
+        setDefaultColorSchemeParams(
+            CustomTabColorSchemeParams.Builder()
+                .setToolbarColor(ContextCompat.getColor(LocalContext.current, R.color.black))
+                .build()
+        )
         setShareState(CustomTabsIntent.SHARE_STATE_OFF)
     }
     val customTabsIntent = builder.build()
