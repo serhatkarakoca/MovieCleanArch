@@ -42,7 +42,7 @@ class MainActivity : ComponentActivity() {
 
                         composable(route = Screen.MovieDetailsScreen.route + "/{${IMDB_ID}}") {
                             // val imdbId = remember {it.arguments?.getString(IMDB_ID) }
-                            MovieDetailsScreen()
+                            MovieDetailsScreen(navController)
                         }
                     }
                 }

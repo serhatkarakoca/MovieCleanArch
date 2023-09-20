@@ -1,5 +1,6 @@
 package com.karakoca.moviecleanarch.presentation.movie_details.view
 
+import AlertDialogMovie
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -15,9 +16,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,6 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberAsyncImagePainter
 import com.karakoca.moviecleanarch.R
@@ -37,9 +43,11 @@ import com.karakoca.moviecleanarch.presentation.movie_details.MovieDetailsViewMo
 @OptIn(ExperimentalLayoutApi::class, ExperimentalCoilApi::class)
 @Composable
 fun MovieDetailsScreen(
+    navController: NavController,
     viewModel: MovieDetailsViewModel = hiltViewModel()
 ) {
     val state = viewModel.state.value
+    val openAlertDialog = remember { mutableStateOf(true) }
 
     BoxWithConstraints(
         Modifier
@@ -136,12 +144,19 @@ fun MovieDetailsScreen(
             }
 
             if (state.error != null) {
-                Column(
-                    Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text(text = state.error, Modifier.padding(20.dp), color = Color.White)
+                if (openAlertDialog.value) {
+                    AlertDialogMovie(
+                        onDismissRequest = {
+                            openAlertDialog.value = false
+                        },
+                        onConfirmation = {
+                            openAlertDialog.value = false
+                            navController.popBackStack()
+                        },
+                        dialogTitle = "Error",
+                        dialogText = state.error,
+                        icon = Icons.Default.Info
+                    )
                 }
             }
         }

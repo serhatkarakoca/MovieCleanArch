@@ -1,5 +1,6 @@
 package com.karakoca.moviecleanarch.presentation.movies.view
 
+import AlertDialogMovie
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,6 +10,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,6 +41,7 @@ fun MovieScreen(
     viewModel: MoviesViewModel = hiltViewModel()
 ) {
     val movies = viewModel.moviesState.collectAsLazyPagingItems()
+    val openAlertDialog = remember { mutableStateOf(true) }
 
     Box(
         modifier = Modifier
@@ -87,6 +91,20 @@ fun MovieScreen(
                                 textAlign = TextAlign.Center,
                                 color = Color.White
                             )
+                            if (openAlertDialog.value && currentState.error.message != "empty") {
+                                AlertDialogMovie(
+                                    onDismissRequest = {
+                                        openAlertDialog.value = false
+                                    },
+                                    onConfirmation = {
+                                        openAlertDialog.value = false
+                                        navController.popBackStack()
+                                    },
+                                    dialogTitle = "Error",
+                                    dialogText = error.toString(),
+                                    icon = Icons.Default.Info
+                                )
+                            }
                         }
                     }
 
@@ -116,6 +134,19 @@ fun MovieScreen(
                                 textAlign = TextAlign.Center,
                                 color = Color.White
                             )
+                            if (openAlertDialog.value && currentState.error.message != "empty") {
+                                AlertDialogMovie(
+                                    onDismissRequest = {
+                                        openAlertDialog.value = false
+                                    },
+                                    onConfirmation = {
+                                        openAlertDialog.value = false
+                                    },
+                                    dialogTitle = "Error",
+                                    dialogText = error.toString(),
+                                    icon = Icons.Default.Info
+                                )
+                            }
                         }
                     }
 
