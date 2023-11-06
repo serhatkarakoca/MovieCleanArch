@@ -59,16 +59,17 @@ data class MovieDetailsDTO(
 
 fun MovieDetailsDTO.toMovieDetail(): MovieDetail {
     return MovieDetail(
-        director,
-        genre,
-        imdbRating,
-        imdbVotes,
-        plot,
-        poster,
-        released,
-        title,
-        type,
-        runtime,
-        year
+        director = director,
+        genre = genre,
+        imdbRating = imdbRating,
+        imdbVotes = imdbVotes,
+        plot = plot,
+        poster = poster,
+        released = released,
+        title = title,
+        type = type,
+        runtime = runtime,
+        year = year,
+        imdbID = imdbID
     )
 }

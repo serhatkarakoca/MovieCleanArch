@@ -18,21 +18,25 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -42,20 +46,19 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberAsyncImagePainter
 import com.karakoca.moviecleanarch.R
 import com.karakoca.moviecleanarch.presentation.movie_details.MovieDetailsViewModel
+import com.karakoca.moviecleanarch.presentation.movies.MoviesEvent
 
-@OptIn(ExperimentalLayoutApi::class, ExperimentalCoilApi::class)
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun MovieDetailsScreen(
     navController: NavController,
     viewModel: MovieDetailsViewModel = hiltViewModel()
 ) {
-    val state = viewModel.state.value
+    val state by viewModel.state.collectAsState()
     val openAlertDialog = remember { mutableStateOf(true) }
-
 
     if (viewModel.showCustomTab.value) {
         ShowCustomTab(imdbId = viewModel.imdbId)
@@ -69,7 +72,6 @@ fun MovieDetailsScreen(
             .verticalScroll(rememberScrollState())
     ) {
         val pageSize = constraints.minHeight
-        val maxHeight = maxHeight
 
         Box(
             modifier = Modifier
@@ -80,29 +82,48 @@ fun MovieDetailsScreen(
                 Column(
                     Modifier
                         .fillMaxSize()
-                        .padding(24.dp)
+                        .padding(horizontal = 24.dp)
                 ) {
 
-                    Column(
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height((pageSize / 5).dp)
-                            .padding(24.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                            .align(Alignment.CenterHorizontally)
                     ) {
                         Image(
                             painter = rememberAsyncImagePainter(movie.poster),
                             contentDescription = null,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clip(RectangleShape)
-                                .padding(24.dp),
-                            contentScale = ContentScale.FillWidth
+                                .clip(RoundedCornerShape(16.dp))
+                                .padding(horizontal = 24.dp),
+                            contentScale = ContentScale.Crop
                         )
+                        IconButton(
+                            onClick = { viewModel.handleEvent(MoviesEvent.AddOrRemoveMovie) },
+                            Modifier
+                                .align(Alignment.TopEnd)
+                                .background(Color.White, CircleShape)
+                        ) {
+                            println(state.isFav)
+                            if (state.isFav)
+                                Image(
+                                    painter = painterResource(id = R.drawable.ic_favorite),
+                                    contentDescription = null
+                                )
+                            else
+                                Image(
+                                    painter = painterResource(id = R.drawable.ic_favorite_border),
+                                    contentDescription = null
+                                )
+                        }
                     }
 
                     FlowRow(
-                        Modifier.fillMaxWidth(),
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(top = 24.dp),
                         horizontalArrangement = Arrangement.Start,
                         verticalArrangement = Arrangement.Center
                     ) {
@@ -183,7 +204,7 @@ fun MovieDetailsScreen(
                             navController.popBackStack()
                         },
                         dialogTitle = "Error",
-                        dialogText = state.error,
+                        dialogText = state.error ?: "",
                         icon = Icons.Default.Info
                     )
                 }

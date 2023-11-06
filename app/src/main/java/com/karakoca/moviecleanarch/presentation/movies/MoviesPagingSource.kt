@@ -22,7 +22,7 @@ class MoviesPagingSource(private val api: MovieApi, private val search: String) 
             val response = api.getMovies(page = page, search = search)
             println(response.body())
 
-            if (response.body()?.response == "True") {
+            if (response.body()?.search.isNullOrEmpty().not()) {
                 LoadResult.Page(
                     data = response.body()?.toMovie() ?: emptyList(),
                     prevKey = if (page == 1) null else page.minus(1),
