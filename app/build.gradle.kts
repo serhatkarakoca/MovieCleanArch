@@ -26,6 +26,13 @@ android {
                 cppFlags += ""
             }
         }
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments["room.schemaLocation"] =
+                    "$projectDir/schemas"
+            }
+        }
     }
 
     buildTypes {
@@ -64,6 +71,7 @@ android {
             version = "3.22.1"
         }
     }
+
 }
 
 dependencies {

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -26,10 +27,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.karakoca.moviecleanarch.R
 import com.karakoca.moviecleanarch.Screen
 import com.karakoca.moviecleanarch.presentation.movie_details.view.MovieDetailsScreen
 import com.karakoca.moviecleanarch.presentation.movies.view.MovieScreen
+import com.karakoca.moviecleanarch.presentation.saved.SavedScreen
 import com.karakoca.moviecleanarch.presentation.ui.theme.MovieCleanArchTheme
 import com.karakoca.moviecleanarch.utils.Constant.IMDB_ID
 import dagger.hilt.android.AndroidEntryPoint
@@ -46,8 +47,11 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+                    val titleVisibility = listOf(Screen.MovieScreen, Screen.SavedScreen)
                     val navController = rememberNavController()
                     val navBackStackEntry = navController.currentBackStackEntryAsState()
+                    val routeTitle =
+                        titleVisibility.firstOrNull { it.route == navBackStackEntry.value?.destination?.route }?.title
                     val isOnTop =
                         navBackStackEntry.value?.destination?.route == Screen.MovieScreen.route
 
@@ -56,10 +60,11 @@ class MainActivity : ComponentActivity() {
                         topBar = {
                             TopAppBar(
                                 title = {
-                                    if (isOnTop) Text(
-                                        text = LocalContext.current.getString(R.string.app_name),
-                                        color = Color.White
-                                    )
+                                    if (routeTitle != null)
+                                        Text(
+                                            text = LocalContext.current.getString(routeTitle),
+                                            color = Color.White
+                                        )
                                 },
                                 colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Black),
                                 navigationIcon = {
@@ -76,7 +81,19 @@ class MainActivity : ComponentActivity() {
                                 },
                                 scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
                                     rememberTopAppBarState()
-                                )
+                                ),
+                                actions = {
+                                    if (isOnTop)
+                                        IconButton(onClick = {
+                                            navController.navigate(Screen.SavedScreen.route)
+                                        }) {
+                                            Icon(
+                                                Icons.Default.Star,
+                                                tint = Color.White,
+                                                contentDescription = "favorites"
+                                            )
+                                        }
+                                }
                             )
                         },
                         content = {
@@ -93,6 +110,11 @@ class MainActivity : ComponentActivity() {
                                 composable(route = Screen.MovieDetailsScreen.route + "/{${IMDB_ID}}") {
                                     // val imdbId = remember {it.arguments?.getString(IMDB_ID) }
                                     MovieDetailsScreen(navController)
+                                }
+                                composable(route = Screen.SavedScreen.route) {
+                                    SavedScreen() { route ->
+                                        navController.navigate(route)
+                                    }
                                 }
                             }
                         })

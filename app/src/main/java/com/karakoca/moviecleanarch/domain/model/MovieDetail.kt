@@ -1,28 +1,23 @@
 package com.karakoca.moviecleanarch.domain.model
 
-import com.google.gson.annotations.SerializedName
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import com.karakoca.moviecleanarch.utils.Constant.TABLE_NAME
 
+@Entity(TABLE_NAME)
 data class MovieDetail(
-    @SerializedName("Director")
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0,
     val director: String?,
-    @SerializedName("Genre")
     val genre: String?,
-    @SerializedName("imdbRating")
     val imdbRating: String?,
-    @SerializedName("imdbVotes")
     val imdbVotes: String?,
-    @SerializedName("Plot")
     val plot: String?,
-    @SerializedName("Poster")
     val poster: String?,
-    @SerializedName("Released")
     val released: String?,
-    @SerializedName("Title")
     val title: String?,
-    @SerializedName("Type")
     val type: String?,
-    @SerializedName("Runtime")
     val runtime: String?,
-    @SerializedName("Year")
-    val year: String?
+    val year: String?,
+    val imdbID: String?,
 )
