@@ -34,9 +34,9 @@ class MovieDetailsUseCase @Inject constructor(private val repository: MovieRepos
         emit(repository.findMovieById(id))
     }.flowOn(Dispatchers.IO)
 
+    suspend fun addMovie(movieDetail: MovieDetail) = repository.addMovie(movieDetail)
 
-    private suspend fun addMovie(movieDetail: MovieDetail) = repository.addMovie(movieDetail)
-    private suspend fun removeMovie(id: Long) = repository.deleteMovie(id)
+    suspend fun removeMovie(id: Long) = repository.deleteMovie(id)
 
     suspend fun addOrRemoveMovie(movie: MovieDetail) {
         findMovieById(movie.imdbID ?: "").collectLatest {

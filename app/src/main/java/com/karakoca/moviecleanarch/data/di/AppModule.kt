@@ -14,6 +14,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
@@ -22,6 +23,9 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
+
+    @Provides
+    fun provideHttpLoggingInterceptor(): HttpLoggingInterceptor = HttpLoggingInterceptor()
 
     @Singleton
     @Provides
@@ -33,7 +37,12 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideApi(okHttpClient: OkHttpClient.Builder): MovieApi {
+    fun provideApi(
+        okHttpClient: OkHttpClient.Builder,
+        interceptor: HttpLoggingInterceptor,
+    ): MovieApi {
+        interceptor.level = HttpLoggingInterceptor.Level.BODY
+        okHttpClient.addNetworkInterceptor(interceptor)
         return Retrofit.Builder()
             .baseUrl(Constant.BASE_URL)
             .client(okHttpClient.build())
